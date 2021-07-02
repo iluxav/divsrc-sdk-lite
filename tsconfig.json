@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "module": "es6",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./lib",
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": false,
+    "target": "es6",
+    "allowJs": true,
+    "lib": ["dom", "es2017"],
+    "skipLibCheck": true
+  },
+  "plugins": [{ "name": "typescript-plugin-css-modules" }],
+  "exclude": ["node_modules", ".storybook", "playground", "dist", "lib"]
+}

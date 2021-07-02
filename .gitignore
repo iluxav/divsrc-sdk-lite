@@ -1,0 +1,9 @@
+/node_modules
+/.next
+/.vscode
+.eslintcache
+/.idea
+/dump.rdb
+**/.DS_Store
+.DS_Store
+/lib
