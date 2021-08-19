@@ -8,6 +8,9 @@ import {
   IdentityFields,
 } from "./interfaces";
 
+
+declare var __webpack_init_sharing__: any;
+declare var __webpack_share_scopes__: any;
 class DivSrcCore implements IDivSrcCore {
   public debug: boolean = false;
   public isBootstrapped: boolean = false;
@@ -65,17 +68,17 @@ class DivSrcCore implements IDivSrcCore {
   public async injectSystemJs() {
     await this.striptInjector(
       this.config?.systemJsUrl ||
-        "https://divsource.s3.eu-central-1.amazonaws.com/libs/system.js",
+      "https://divsource.s3.eu-central-1.amazonaws.com/libs/system.js",
       "systemjs"
     );
     await this.striptInjector(
       this.config?.systemJsExtrasNamed ||
-        "https://unpkg.com/systemjs/dist/extras/named-register.js",
+      "https://unpkg.com/systemjs/dist/extras/named-register.js",
       "systemjs_extras_named"
     );
     await this.striptInjector(
       this.config?.systemJsExtrasAmd ||
-        "https://unpkg.com/systemjs/dist/extras/amd.js",
+      "https://unpkg.com/systemjs/dist/extras/amd.js",
       "systemjs_extras_amd"
     );
   }
@@ -89,7 +92,7 @@ class DivSrcCore implements IDivSrcCore {
     }
     const script = document.createElement("script");
     script.type = "systemjs-importmap";
-    script.innerText = JSON.stringify({ imports: this.importmaps });
+    script.innerText = JSON.stringify({imports: this.importmaps});
     document.getElementsByTagName("head")[0].prepend(script);
   }
 
@@ -344,7 +347,7 @@ class DivSrcCore implements IDivSrcCore {
   private tryMapEmulatorsArrayToObject(emulatorComponents) {
     if (Array.isArray(emulatorComponents)) {
       return emulatorComponents.reduce((acc: any, next: string) => {
-        acc[next] = { zone: next };
+        acc[next] = {zone: next};
         return acc;
       }, {});
     }
@@ -478,6 +481,24 @@ class DivSrcCore implements IDivSrcCore {
     this.identityChangeHandlers = this.identityChangeHandlers.filter(
       (clb) => clb !== callback
     );
+  }
+
+  public async webpackInitSharing() {
+    return __webpack_init_sharing__ && __webpack_init_sharing__("default")
+  }
+
+  public webpackShareScopes() {
+    return __webpack_share_scopes__ && __webpack_share_scopes__.default;
+  }
+
+  public async webpackImport(artifactId: string, moduleName: string) {
+    await this.webpackInitSharing()
+    await this.import(artifactId)
+    const container = window[artifactId];
+    await container.init(this.webpackInitSharing());
+    const factory = await container.get(moduleName);
+    const Module = factory();
+    return Module;
   }
 }
 const instance = new DivSrcCore();

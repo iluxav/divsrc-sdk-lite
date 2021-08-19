@@ -1,3 +1,4 @@
+
 export interface ArtifactResponse {
   installations: Artifact[];
   zones: string[];
@@ -25,10 +26,10 @@ export interface Artifact {
 export interface Emulator {
   url: string;
   components:
-    | {
-        [key: string]: boolean | object;
-      }
-    | string[];
+  | {
+    [key: string]: boolean | object;
+  }
+  | string[];
 }
 
 export interface Config {
