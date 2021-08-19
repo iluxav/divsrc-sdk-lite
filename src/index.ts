@@ -109,6 +109,9 @@ class DivSrcCore implements IDivSrcCore {
   }
 
   public generateArtifactBaseUrl(artifact: Artifact): string {
+    if(!artifact.version && artifact.baseUrl){
+      return artifact.baseUrl;
+    }
     const version = artifact.version || '0.0.0'
     return `${artifact.baseUrl}/${artifact.artifactId}/${version}`
   }
