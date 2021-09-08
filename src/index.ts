@@ -7,7 +7,7 @@ import {
   IDivSrcCore,
   IdentityFields,
 } from "./interfaces";
-
+import {loadWebpackModuleComponent} from './WebpackFederation'
 
 declare var __webpack_init_sharing__: any;
 declare var __webpack_share_scopes__: any;
@@ -155,28 +155,15 @@ class DivSrcCore implements IDivSrcCore {
     common.log(
       `Mount From HTTP Request: ${artifact.zone}/${artifact.installationId}`
     );
-    const injector = window["System"]
-      ? this.es6ModuleImporter(artifact)
-      : this.tagScriptImporter(artifact);
+    let injector = this.tagScriptImporter(artifact);
+    if (window["System"]) {
+      injector = this.es6ModuleImporter(artifact)
+    }
+
+
     return injector
       .then((_artifactObj: any) => {
-        _artifactObj = _artifactObj.default || _artifactObj;
-        if (_artifactObj) {
-          this.artifacts
-            .filter((f) => f.zone === artifact.zone)
-            .forEach((ar) => {
-              if (this.registry[ar.installationId]) {
-                this.registry[ar.installationId].isActive = false;
-              }
-            });
-          this.registry[artifact.installationId] = {
-            ...artifact,
-            isActive: true,
-          };
-          delete window[artifact.artifactId];
-          this.installations[artifact.installationId] =
-            _artifactObj.default || _artifactObj;
-        }
+        this.updateRegistry(artifact, _artifactObj)
       })
       .catch((err) => {
         console.log(err);
@@ -187,6 +174,25 @@ class DivSrcCore implements IDivSrcCore {
           error: "Failed to mount " + err.message ? err.message : "",
         };
       });
+  }
+
+  public updateRegistry(artifact: Artifact, module: any) {
+    const _artifactObj = module.default || module;
+    if (_artifactObj) {
+      this.artifacts
+        .filter((f) => f.zone === artifact.zone)
+        .forEach((ar) => {
+          if (this.registry[ar.installationId]) {
+            this.registry[ar.installationId].isActive = false;
+          }
+        });
+      this.registry[artifact.installationId] = {
+        ...artifact,
+        isActive: true,
+      };
+      delete window[artifact.artifactId];
+      this.installations[artifact.installationId] = _artifactObj;
+    }
   }
 
   public async mountAllArtifacts() {
@@ -502,15 +508,48 @@ class DivSrcCore implements IDivSrcCore {
     return __webpack_share_scopes__ && __webpack_share_scopes__.default;
   }
 
-  public async webpackImport(artifactId: string, moduleName: string) {
-    await this.webpackInitSharing()
-    await this.import(artifactId)
-    const container = window[artifactId];
-    await container.init(this.webpackShareScopes());
-    const factory = await container.get(moduleName);
-    const Module = factory();
-    return Module;
+
+  public webpackImport(scope, module) {
+    return async () => {
+      const artifact = this.getArtifact(scope);
+      if (!artifact) {
+        return null
+      }
+      const install = this.getArtifactByInstallationId(artifact.installationId)
+
+      await this.loadWebpackModuleScript(install.url)
+
+      await __webpack_init_sharing__("default");
+      const container = window[scope];
+      await container.init(__webpack_share_scopes__.default);
+      const factory = await window[scope].get(module);
+      const Module = factory();
+      return Module;
+    };
   }
+
+  public loadWebpackModuleScript(url) {
+    return new Promise((res, rej) => {
+
+      const element = document.createElement("script");
+      element.src = url;
+      element.type = "text/javascript";
+      element.async = true;
+
+      element.onload = () => {
+        console.log(`Dynamic Script Loaded: ${url}`);
+        res(true);
+      };
+
+      element.onerror = () => {
+        console.error(`Dynamic Script Error: ${url}`);
+        rej(true);
+      };
+
+      document.head.appendChild(element);
+    })
+  }
+
 }
 const instance = new DivSrcCore();
 if (window) {

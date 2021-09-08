@@ -2,24 +2,39 @@
 declare var __webpack_init_sharing__: any;
 declare var __webpack_share_scopes__: any;
 
-class WebpackFederationPlugin {
-  public async webpackInitSharing() {
-    return __webpack_init_sharing__ && __webpack_init_sharing__("default")
-  }
+export function loadWebpackModuleComponent(scope, module, url) {
+  return async () => {
 
-  public webpackShareScopes() {
-    return __webpack_share_scopes__ && __webpack_share_scopes__.default;
-  }
+    await loadWebpackModuleScript(url)
 
-  public async import(artifactId: string, moduleName: string) {
-    await window.divSrcSdk.import(artifactId)
-    const container = window[artifactId];
+    await __webpack_init_sharing__("default");
+    const container = window[scope]; // or get the container somewhere else
+    // Initialize the container, it may provide shared modules
     await container.init(__webpack_share_scopes__.default);
-    const factory = await container.get(moduleName);
+    const factory = await window[scope].get(module);
     const Module = factory();
     return Module;
-
-  }
+  };
 }
 
-export default WebpackFederationPlugin
+export function loadWebpackModuleScript(url) {
+  return new Promise((res, rej) => {
+
+    const element = document.createElement("script");
+    element.src = url;
+    element.type = "text/javascript";
+    element.async = true;
+
+    element.onload = () => {
+      console.log(`Dynamic Script Loaded: ${url}`);
+      res(true);
+    };
+
+    element.onerror = () => {
+      console.error(`Dynamic Script Error: ${url}`);
+      rej(true);
+    };
+
+    document.head.appendChild(element);
+  })
+}

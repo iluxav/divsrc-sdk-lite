@@ -41,6 +41,7 @@ export interface Config {
   };
   installationMapUrl?: string;
   es6ModuleLoader?: boolean | undefined;
+  webpackModuleLoader?: boolean | undefined;
   emulators?: Emulator[];
   systemJsUrl?: string;
   systemJsExtrasAmd?: string;
