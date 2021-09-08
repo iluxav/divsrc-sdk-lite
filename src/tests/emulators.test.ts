@@ -41,8 +41,7 @@ describe('SDK - Emulators', function () {
         baseUrl: 'http://localhost:5555/artifact'
       }
     });
-    sdk.init({
-      installationMapUrl: `${base}/v1/installation/pbkey/map.json`,
+    sdk.init(`${base}/v1/installation/pbkey/map.json`, {
       emulators: [{
         url: 'http://localhost:5555',
         components: ['@divsrc-some-app']

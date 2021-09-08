@@ -38,9 +38,7 @@ describe('SDK - Local Overrides', function () {
     mock.onGet(`${base}/v1/installation/pbkey/map.json`).reply(200, mockedData({
       installations
     }));
-    await sdk.init({
-      installationMapUrl: `${base}/v1/installation/pbkey/map.json`
-    })
+    await sdk.init(`${base}/v1/installation/pbkey/map.json`)
 
     const artifact: Artifact | undefined = sdk.getArtifactByZone('SplitWidgetZone')
     expect(artifact).toBeDefined()

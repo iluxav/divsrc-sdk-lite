@@ -14,9 +14,7 @@ describe('SDK - Core', function () {
       return Promise.resolve()
     });
     sdk.injectSystemJs = mockedInjector
-    sdk.init({
-      installationMapUrl: `${base}/v1/installation/pbkey/map.json`,
-    }).then(() => {
+    sdk.init(`${base}/v1/installation/pbkey/map.json`).then(() => {
       done()
     }).catch(err => {
       done(err)

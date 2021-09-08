@@ -369,19 +369,21 @@ class DivSrcCore implements IDivSrcCore {
     }
     return axios.get(this.config.installationMapUrl).then((r) => r && r.data);
   }
-  public async init(config: Config): Promise<any> {
+
+
+  public async init(installationMapUrl: string, config?: Config): Promise<any> {
     try {
       this.debug =
         localStorage &&
         (!!localStorage.getItem("_debug") ||
           !!localStorage.getItem("divsrc_debug"));
-      this.config = config;
+      this.config = {...config || {}, installationMapUrl};
       const response: ArtifactResponse =
         this.mockedResponse || (await this.fetchMap());
       this.artifacts = response.installations;
       this.importmaps = {
         ...(response.importmaps || {}),
-        ...(config.importmaps || {}),
+        ...(this.config.importmaps || {}),
       };
       this.tryInjectImportMaps();
 
@@ -389,9 +391,9 @@ class DivSrcCore implements IDivSrcCore {
         await this.injectSystemJs();
       }
 
-      if (config.emulators && config.emulators.length > 0) {
+      if (this.config.emulators && this.config.emulators.length > 0) {
         const emulatedResults = await Promise.all(
-          config.emulators.map((em) =>
+          this.config.emulators.map((em) =>
             axios
               .get(em.url)
               .then((r) => r && r.data)
@@ -401,7 +403,7 @@ class DivSrcCore implements IDivSrcCore {
               })
           )
         );
-        const rules: any = config.emulators.reduce((acc, next) => {
+        const rules: any = this.config.emulators.reduce((acc, next) => {
           return {
             ...acc,
             ...this.tryMapEmulatorsArrayToObject(next.components),
