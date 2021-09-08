@@ -21,6 +21,7 @@ export interface Artifact {
   version: string;
   mappingRules?: any;
   url?: string;
+  name?: string;
 }
 
 export interface Emulator {
