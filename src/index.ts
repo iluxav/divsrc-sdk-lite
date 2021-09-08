@@ -225,6 +225,10 @@ class DivSrcCore implements IDivSrcCore {
     }
   }
 
+  public setArtifact(artifact: Artifact) {
+    return this.overrideArtifactByInstallationId(artifact);
+  }
+
   public overrideArtifactByInstallationId(artifact: Artifact) {
     if (!this.getArtifactByInstallationId(artifact.installationId)) {
       this.artifacts.push(artifact);
