@@ -1,6 +1,6 @@
 {
   "name": "@divsrc/divsrc-sdk-lite",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "",
   "files": [
     "lib"
@@ -16,7 +16,7 @@
     "test:w": "jest --watchAll",
     "prebuild": "rm -rf ./lib",
     "prebuild:client": "rm -rf ./testApp/static/dist",
-    "build": "NODE_ENV=production webpack --config ./webpack.config.js",
+    "build": "webpack --config ./webpack.config.js",
     "prepublishOnly": "rm -rf lib && npm run build"
   },
   "author": "iluxa.v@gmail.com",
@@ -57,6 +57,7 @@
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.29.0",
     "rollup-plugin-uglify": "^6.0.2",
+    "terser-webpack-plugin": "^5.2.3",
     "ts-jest": "^24.0.1",
     "ts-loader": "^5.4.5",
     "ts-node": "^8.0.3",

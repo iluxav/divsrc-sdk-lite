@@ -3,5 +3,15 @@
     "@babel/preset-env",
     "@babel/preset-typescript",
     "@babel/preset-react"
+  ],
+  "plugins": [
+    [
+      "babel-plugin-transform-rename-properties",
+      {
+        "rename": {
+          "__webpack_init_sharing__": "__webpack_init_sharing__"
+        }
+      }
+    ]
   ]
 }

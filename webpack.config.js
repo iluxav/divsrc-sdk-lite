@@ -1,4 +1,5 @@
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = [{
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -6,6 +7,18 @@ module.exports = [{
     index: path.join(__dirname, 'src', 'index.ts'),
     ReactRenderer: path.join(__dirname, 'src', 'reactRenderer.tsx'),
     SingleSpaRenderer: path.join(__dirname, 'src', 'singleSpaRenderer.ts'),
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          mangle: {
+            reserved: ['__webpack_init_sharing__', '__webpack_share_scopes__']
+          },
+        },
+      }),
+    ],
   },
   target: 'web',
   resolve: {
