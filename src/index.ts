@@ -7,6 +7,7 @@ import {
   IDivSrcCore,
   IdentityFields,
 } from "./interfaces";
+import {loadWebpackModuleComponent} from './WebpackFederation'
 
 declare var __webpack_init_sharing__: any;
 declare var __webpack_share_scopes__: any;
@@ -518,11 +519,10 @@ class DivSrcCore implements IDivSrcCore {
 
       await this.loadWebpackModuleScript(install.url)
 
-      const sharing = eval('__webpack_init_sharing__')
-      const scopes = eval('__webpack_share_scopes__')
-      await sharing("default");
-      const container = window[scope];
-      await container.init(scopes.default);
+      await this.webpackInitSharing();
+      const container = window[scope]; // or get the container somewhere else
+
+      await container.init(this.webpackShareScopes());
       const factory = await window[scope].get(module);
       const Module = factory();
       return Module;
