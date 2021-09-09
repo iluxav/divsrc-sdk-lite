@@ -518,9 +518,11 @@ class DivSrcCore implements IDivSrcCore {
 
       await this.loadWebpackModuleScript(install.url)
 
-      await __webpack_init_sharing__("default");
+      const sharing = eval('__webpack_init_sharing__')
+      const scopes = eval('__webpack_share_scopes__')
+      await sharing("default");
       const container = window[scope];
-      await container.init(__webpack_share_scopes__.default);
+      await container.init(scopes.default);
       const factory = await window[scope].get(module);
       const Module = factory();
       return Module;
